@@ -49,4 +49,30 @@ router.post('/userprofilecomplete', (req, res) => {
         .catch(err => console.log(err))
 });
 
+
+// Database CRUD Operations
+// @POST Request to GET the Contacts
+// GET 
+router.get('/getallpeople/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Users_Model.findOne({ email }).sort({date: -1})
+        .then(data => {
+            if (data.type == "Sugar Baby") {
+                Users_Model.find({'type': "Sugar Daddy"}).sort({date: -1})
+                .then(data => {
+                    res.status(200).json(data)
+                })
+                .catch(err => res.status(400).json(`Error: ${err}`))
+            } else {
+                Users_Model.find({'type': "Sugar Baby"}).sort({date: -1})
+                .then(data => {
+                    res.status(200).json(data)
+                })
+                .catch(err => res.status(400).json(`Error: ${err}`))
+            }
+        })
+        .catch(err => res.status(400).json(`Error: ${err}`))
+});
+
 module.exports = router;
