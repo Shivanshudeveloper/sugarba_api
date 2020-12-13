@@ -4,6 +4,12 @@ const router = express.Router();
 // Getting Module
 const Users_Model = require('../models/Users');
 
+// TEST
+// @GET TEST
+// GET 
+router.get('/test', (req, res) => {
+    res.send("Working");
+});
 
 // Database CRUD Operations
 // @POST Request to create a new user
