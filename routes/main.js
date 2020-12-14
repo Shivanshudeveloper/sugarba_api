@@ -75,4 +75,18 @@ router.get('/getallpeople/:email', (req, res) => {
         .catch(err => res.status(400).json(`Error: ${err}`))
 });
 
+
+// Database CRUD Operations
+// @POST Request to GET the People
+// GET 
+router.get('/userprofiledata/:id', (req, res) => {
+    const { id } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Users_Model.findOne({ '_id': id }).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data);
+        })
+        .catch(err => res.status(400).json(`Error: ${err}`))
+});
+
 module.exports = router;
