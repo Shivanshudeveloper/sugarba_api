@@ -3,6 +3,7 @@ const router = express.Router();
 
 // Getting Module
 const Users_Model = require('../models/Users');
+const Likes_Model = require('../models/Likes');
 
 // TEST
 // @GET TEST
@@ -16,7 +17,6 @@ router.get('/test', (req, res) => {
 // POST 
 router.post('/usersregistration', (req, res) => {
     const { fullName, value, email, username } = req.body;
-
     Users_Model.countDocuments({'email': email})
         .then((count) => {
             if (count > 0) {
@@ -26,7 +26,8 @@ router.post('/usersregistration', (req, res) => {
                     fullName,
                     type: value,
                     email,
-                    username
+                    username,
+                    likes: 0
                 });
                 newUser.save()
                     .then((data) => {
@@ -37,6 +38,52 @@ router.post('/usersregistration', (req, res) => {
         })
 });
 
+
+// Database CRUD Operations
+// @POST Request to like a profile
+// POST 
+router.post('/likeuserprofilepicture', (req, res) => {
+    const { currentUserId, email } = req.body;
+    Likes_Model.countDocuments({ 'userprofile': currentUserId, 'likedby': email })
+    .then((count) => {
+        if (count === 0) {
+            Users_Model.findOne({ '_id': currentUserId })
+                .then(data => {
+                    var userLikes = data.likes + 1;
+                    Users_Model.findOneAndUpdate({'_id': currentUserId}, { likes: userLikes }, { useFindAndModify: false })
+                        .then(() => {
+                            const newLike = new Likes_Model({
+                                userprofile: currentUserId,
+                                likedby: email
+                            });
+                            newLike.save()
+                                .then(() => {
+                                    res.status(200).json('Liked')
+                                })
+                                .catch(err => res.status(500).json(`Server Error is ${err}`))
+                        })
+                        .catch(err => console.log(err))
+                })
+                .catch(err => res.status(400).json(`Error: ${err}`))
+        } else {
+            Likes_Model.findOneAndDelete({ 'userprofile': currentUserId, 'likedby': email })
+            .then(data => {
+                Users_Model.findOne({ '_id': currentUserId })
+                .then(data => {
+                    var userLikes = data.likes - 1;
+                    Users_Model.findOneAndUpdate({'_id': currentUserId}, { likes: userLikes }, { useFindAndModify: false })
+                        .then(() => {
+                            res.status(201).json('Un Liked')
+                        })
+                        .catch(err => console.log(err))
+                })
+                .catch(err => res.status(400).json(`Error: ${err}`))
+            })
+            .catch(err => res.status(400).json(`Error: ${err}`))
+        }
+    })
+    .catch(err => res.status(500).json('Server Error'))
+});
 
 // Database CRUD Operations
 // @POST Request to update a new user
