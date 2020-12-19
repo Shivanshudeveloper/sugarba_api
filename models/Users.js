@@ -81,6 +81,14 @@ const usersDataSchema = new mongoose.Schema({
         type: Array,
         required: false
     },
+    likes: {
+        type: Number,
+        required: false
+    },
+    credits: {
+        type: Number,
+        required: false
+    },
     date: {
         type: Date,
         default: Date.now
