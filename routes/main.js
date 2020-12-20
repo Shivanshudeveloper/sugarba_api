@@ -4,6 +4,7 @@ const router = express.Router();
 // Getting Module
 const Users_Model = require('../models/Users');
 const Likes_Model = require('../models/Likes');
+const Block_Model = require('../models/Block');
 
 // TEST
 // @GET TEST
@@ -105,23 +106,32 @@ router.post('/userprofilecomplete', (req, res) => {
 router.get('/getallpeople/:email', (req, res) => {
     const { email } = req.params;
     res.setHeader('Content-Type', 'application/json');
-    Users_Model.findOne({ email }).sort({date: -1})
+    var tempBlockUserArr = [];
+
+    Block_Model.find({ email })
         .then(data => {
-            if (data.type == "Sugar Baby") {
-                Users_Model.find({'type': "Sugar Daddy"}).sort({date: -1})
+            data.map(d => {
+                tempBlockUserArr.push(d.blockedUserEmail);
+            })
+            Users_Model.findOne({ email }).sort({date: -1})
                 .then(data => {
-                    res.status(200).json(data)
+                    if (data.type == "Sugar Baby") {
+                        Users_Model.find({'type': "Sugar Daddy", email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                        .then(data => {
+                            res.status(200).json(data)
+                        })
+                        .catch(err => console.log(err))
+                    } else {
+                        Users_Model.find({'type': "Sugar Baby", email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                        .then(data => {
+                            res.status(200).json(data)
+                        })
+                        .catch(err => console.log(err))
+                    }
                 })
                 .catch(err => res.status(400).json(`Error: ${err}`))
-            } else {
-                Users_Model.find({'type': "Sugar Baby"}).sort({date: -1})
-                .then(data => {
-                    res.status(200).json(data)
-                })
-                .catch(err => res.status(400).json(`Error: ${err}`))
-            }
         })
-        .catch(err => res.status(400).json(`Error: ${err}`))
+        .catch(err => console.log(err))
 });
 
 
@@ -148,6 +158,57 @@ router.get('/getusercredits/:email', (req, res) => {
     Users_Model.findOne({ email })
         .then(data => {
             res.status(200).json(data);
+        })
+        .catch(err => res.status(400).json(`Error: ${err}`))
+});
+
+// Database CRUD Operations
+// @POST Request to block a user
+// POST 
+router.post('/blockuser', (req, res) => {
+    const { email, currentUserId, currentUserEmail, blockedUserName, blockedUserProfile } = req.body;
+    Block_Model.countDocuments({'email': email, 'blockedUserEmail': currentUserEmail})
+        .then((count) => {
+            if (count > 0) {
+                res.status(201).json('Already Exist')
+            } else {
+                const newUser = new Block_Model({
+                    email,
+                    blockedUserId: currentUserId,
+                    blockedUserEmail: currentUserEmail,
+                    blockedUserName,
+                    blockedUserProfile
+                });
+                newUser.save()
+                    .then((data) => {
+                        res.status(200)
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
+});
+
+// Database CRUD Operations
+// @POST Request to GET the Contacts Blocked
+// GET 
+router.get('/getallpeopleblocked/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Block_Model.find({ email } ).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to unblock a user
+// POST 
+router.post('/unblockuser', (req, res) => {
+    const { email, unblockUser } = req.body;
+    Block_Model.findOneAndDelete({ 'email': email, 'blockedUserEmail': unblockUser })
+        .then(data => {
+            res.status(200).json(data)
         })
         .catch(err => res.status(400).json(`Error: ${err}`))
 });
