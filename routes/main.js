@@ -5,6 +5,7 @@ const router = express.Router();
 const Users_Model = require('../models/Users');
 const Likes_Model = require('../models/Likes');
 const Block_Model = require('../models/Block');
+const Questions_Model = require('../models/Questions');
 
 // TEST
 // @GET TEST
@@ -211,6 +212,63 @@ router.post('/unblockuser', (req, res) => {
             res.status(200).json(data)
         })
         .catch(err => res.status(400).json(`Error: ${err}`))
+});
+
+// Database CRUD Operations
+// @POST Request to send questions
+// POST 
+router.post('/sendquestions', (req, res) => {
+    const { email, sendToEmail, question, profilePic, username } = req.body;
+    const newQuestion = new Questions_Model({
+        email,
+        sendToEmail,
+        question,
+        profilePic,
+        username
+    });
+    newQuestion.save()
+        .then((data) => {
+            res.status(200)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to GET Question for Me
+// GET 
+router.get('/questionforme/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Questions_Model.find({ sendToEmail: email } ).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to GET Question from Me
+// GET 
+router.get('/questionfromme/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Questions_Model.find({ email } ).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to send questions
+// POST 
+router.post('/responsequestion', (req, res) => {
+    const { questionId, response } = req.body;
+    Questions_Model.findOneAndUpdate({'_id': questionId}, { reply: response }, { useFindAndModify: false })
+        .then(() => {
+            res.status(200)
+        })
+        .catch(err => console.log(err))
 });
 
 module.exports = router;
