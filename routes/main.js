@@ -8,6 +8,7 @@ const Block_Model = require('../models/Block');
 const Questions_Model = require('../models/Questions');
 const Favorites_Model = require('../models/Favorite');
 const Kiss_Model = require('../models/Kiss');
+const Report_Model = require('../models/Report');
 
 // TEST
 // @GET TEST
@@ -391,6 +392,30 @@ router.post('/responsequestionkiss', (req, res) => {
     const { questionId } = req.body;
     Kiss_Model.findOneAndUpdate({'_id': questionId}, { reply: '1' }, { useFindAndModify: false })
         .then(() => {
+            res.status(200)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to send questions
+// POST 
+router.post('/reportuser', (req, res) => {
+    const { email, sendToEmail, profilePic, username, profileId, senderprofilePic, senderusername, senderuserid, report, comments } = req.body;
+    const newReport = new Report_Model({
+        email,
+        sendToEmail,
+        profilePic,
+        username,
+        profileId,
+        senderprofilePic,
+        senderusername,
+        senderuserid,
+        report,
+        comments
+    });
+    newReport.save()
+        .then((data) => {
             res.status(200)
         })
         .catch(err => console.log(err))
