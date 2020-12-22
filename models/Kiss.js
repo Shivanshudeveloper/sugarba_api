@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const usersQuestionsSchema = new mongoose.Schema({
+const usersKissSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true
@@ -9,8 +9,8 @@ const usersQuestionsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    question: {
-        type: String,
+    kiss: {
+        type: Number,
         required: true
     },
     profilePic: {
@@ -46,5 +46,5 @@ const usersQuestionsSchema = new mongoose.Schema({
         default: Date.now
     }
 })
-const questions = mongoose.model('questions', usersQuestionsSchema)
-module.exports = questions
+const kiss = mongoose.model('kiss', usersKissSchema)
+module.exports = kiss

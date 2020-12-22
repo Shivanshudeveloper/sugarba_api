@@ -6,6 +6,8 @@ const Users_Model = require('../models/Users');
 const Likes_Model = require('../models/Likes');
 const Block_Model = require('../models/Block');
 const Questions_Model = require('../models/Questions');
+const Favorites_Model = require('../models/Favorite');
+const Kiss_Model = require('../models/Kiss');
 
 // TEST
 // @GET TEST
@@ -102,7 +104,7 @@ router.post('/userprofilecomplete', (req, res) => {
 
 
 // Database CRUD Operations
-// @POST Request to GET the Contacts
+// @POST Request to GET the
 // GET 
 router.get('/getallpeople/:email', (req, res) => {
     const { email } = req.params;
@@ -143,6 +145,19 @@ router.get('/userprofiledata/:id', (req, res) => {
     const { id } = req.params;
     res.setHeader('Content-Type', 'application/json');
     Users_Model.findOne({ '_id': id }).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data);
+        })
+        .catch(err => res.status(400).json(`Error: ${err}`))
+});
+
+// Database CRUD Operations
+// @POST Request to GET the People
+// GET 
+router.get('/userprofiledata2/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Users_Model.findOne({ email }).sort({date: -1})
         .then(data => {
             res.status(200).json(data);
         })
@@ -190,7 +205,7 @@ router.post('/blockuser', (req, res) => {
 });
 
 // Database CRUD Operations
-// @POST Request to GET the Contacts Blocked
+// @POST Request to GET the Users Blocked
 // GET 
 router.get('/getallpeopleblocked/:email', (req, res) => {
     const { email } = req.params;
@@ -218,13 +233,17 @@ router.post('/unblockuser', (req, res) => {
 // @POST Request to send questions
 // POST 
 router.post('/sendquestions', (req, res) => {
-    const { email, sendToEmail, question, profilePic, username } = req.body;
+    const { email, sendToEmail, question, profilePic, username, profileId, senderprofilePic, senderusername, senderuserid } = req.body;
     const newQuestion = new Questions_Model({
         email,
         sendToEmail,
         question,
         profilePic,
-        username
+        username,
+        profileId,
+        senderprofilePic,
+        senderusername,
+        senderuserid
     });
     newQuestion.save()
         .then((data) => {
@@ -265,6 +284,112 @@ router.get('/questionfromme/:email', (req, res) => {
 router.post('/responsequestion', (req, res) => {
     const { questionId, response } = req.body;
     Questions_Model.findOneAndUpdate({'_id': questionId}, { reply: response }, { useFindAndModify: false })
+        .then(() => {
+            res.status(200)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to add user to favorite
+// POST 
+router.post('/addtofavoritelist', (req, res) => {
+    const { email, currentUserId, currentUserEmail, blockedUserName, blockedUserProfile } = req.body;
+    Favorites_Model.countDocuments({'email': email, 'favoriteUserEmail': currentUserEmail})
+        .then((count) => {
+            if (count > 0) {
+                res.status(201).json('Already Exist')
+            } else {
+                const newUserFavorite = new Favorites_Model({
+                    email,
+                    favoriteUserId: currentUserId,
+                    favoriteUserEmail: currentUserEmail,
+                    favoriteUserName: blockedUserName,
+                    favoriteUserProfile: blockedUserProfile
+                });
+                newUserFavorite.save()
+                    .then((data) => {
+                        res.status(200)
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
+});
+
+// Database CRUD Operations
+// @POST Request to GET the Favories Users
+// GET 
+router.get('/allfavorites/:email', (req, res) => {
+    const { email } = req.params;
+    Favorites_Model.find({ email }).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to send questions
+// POST 
+router.post('/sendkissuser', (req, res) => {
+    const { email, sendToEmail, kiss, profilePic, username, profileId, senderprofilePic, senderusername, senderuserid } = req.body;
+    Kiss_Model.countDocuments({'email': email, 'sendToEmail': sendToEmail})
+        .then((count) => {
+            if (count > 0) {
+                res.status(201).json('Already Exist')
+            } else {
+                const newKiss = new Kiss_Model({
+                    email,
+                    sendToEmail,
+                    kiss,
+                    profilePic,
+                    username,
+                    profileId,
+                    senderprofilePic,
+                    senderusername,
+                    senderuserid
+                });
+                newKiss.save()
+                    .then((data) => {
+                        res.status(200)
+                    })
+                    .catch(err => console.log(err))
+            }
+        })
+});
+
+// Database CRUD Operations
+// @POST Request to GET Question for Me
+// GET 
+router.get('/kissesforme/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Kiss_Model.find({ sendToEmail: email } ).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to GET Question from Me
+// GET 
+router.get('/kissesfromme/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    Kiss_Model.find({ email } ).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to send questions
+// POST 
+router.post('/responsequestionkiss', (req, res) => {
+    const { questionId } = req.body;
+    Kiss_Model.findOneAndUpdate({'_id': questionId}, { reply: '1' }, { useFindAndModify: false })
         .then(() => {
             res.status(200)
         })
