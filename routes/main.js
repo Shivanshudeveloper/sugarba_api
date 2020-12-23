@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-
+const stripe = require('stripe')('sk_test_51HzRB6FXQdX7lmvWuuR5Vps43XA0nIsZOPv8JF1NrebMQPu8zRpdzl0wRMMH7Rz6nlh3rHhn1k9jKrzQWaL1tJZD00CK2PwLWk')
+const { v4: uuidv4 } = require('uuid');
 // Getting Module
 const Users_Model = require('../models/Users');
 const Likes_Model = require('../models/Likes');
@@ -9,6 +10,7 @@ const Questions_Model = require('../models/Questions');
 const Favorites_Model = require('../models/Favorite');
 const Kiss_Model = require('../models/Kiss');
 const Report_Model = require('../models/Report');
+const Payment_Model = require('../models/Payment');
 
 // TEST
 // @GET TEST
@@ -419,6 +421,77 @@ router.post('/reportuser', (req, res) => {
             res.status(200)
         })
         .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to the Payment
+// POST 
+router.post('/charges', async (req, res) => {
+    const {email, amount} = req.body;
+    const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount * 100,
+        currency: 'usd',
+        // Verify your integration in this guide by including this parameter
+        metadata: {integration_check: 'accept_a_payment'},
+        receipt_email: email,
+    });
+
+    res.json({'client_secret': paymentIntent['client_secret']})
+});
+
+// Database CRUD Operations
+// @POST Request to send questions
+// POST 
+router.post('/paymentsuccessfull', (req, res) => {
+    const { email, username, amount, package } = req.body;
+    var pack = '';
+    var credits = 0;
+    if ( package === "vb" ) {
+        pack = '12 Months VIP 35 USD';
+    } else if ( package === "vc" ) {
+        pack = '6 Months VIP 45 USD';
+    } else if ( package === "vd" ) {
+        pack = '3 Months VIP 55 USD';
+    } else if ( package === "ve" ) {
+        pack = '1 Months VIP 66 USD';
+    } else if ( package === "cb" ) {
+        pack = '100 Credits 160 USD';
+        credits = 100;
+    } else if ( package === "cc" ) {
+        pack = '500 Credits 100 USD';
+        credits = 500;
+    } else if ( package === "cd" ) {
+        pack = '150 Credits 40 USD';
+        credits = 150;
+    } else if ( package === "ce" ) {
+        pack = '50 Credits 18 USD';
+        credits = 50;
+    }
+
+    Users_Model.findOne({ email })
+        .then(data => {
+            credits = credits + data.credits;
+            Users_Model.findOneAndUpdate({ email }, { credits }, { useFindAndModify: false })
+                .then(() => {
+                    const newPayment = new Payment_Model({
+                        email,
+                        username,
+                        amount,
+                        package: pack
+                    });
+                    newPayment.save()
+                        .then((data) => {
+                            res.status(200).json("Done");
+                        })
+                        .catch(err => console.log(err))
+                })
+                .catch(err => console.log(err))
+        })
+        .catch(err => res.status(400).json(`Error: ${err}`))
+
+    
+
+    
 });
 
 module.exports = router;
