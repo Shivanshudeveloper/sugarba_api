@@ -81,6 +81,14 @@ const usersDataSchema = new mongoose.Schema({
         type: Array,
         required: false
     },
+    country: {
+        type: String,
+        required: false
+    },
+    region: {
+        type: String,
+        required: false
+    },
     likes: {
         type: Number,
         required: false
