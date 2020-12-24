@@ -23,14 +23,13 @@ router.get('/test', (req, res) => {
 // @POST Request to create a new user
 // POST 
 router.post('/usersregistration', (req, res) => {
-    const { fullName, value, email, username } = req.body;
+    const { value, email, username } = req.body;
     Users_Model.countDocuments({'email': email})
         .then((count) => {
             if (count > 0) {
                 res.status(201).json('Already Exist')
             } else {
                 const newUser = new Users_Model({
-                    fullName,
                     type: value,
                     email,
                     username,
@@ -97,8 +96,8 @@ router.post('/likeuserprofilepicture', (req, res) => {
 // @POST Request to update a new user
 // POST 
 router.post('/userprofilecomplete', (req, res) => {
-    const { profileDownloadUrl, email, about, assets, bodyType, dob, eyes, hair, height, kids, place, smoker, yearlyIncome, contactArr, langArr, leisureArr, sportArr, country, region } = req.body;
-    Users_Model.findOneAndUpdate({'email': email}, { profileDownloadUrl, about, assets, bodyType, dob, eyes, hair, height, kids, place, smoker, yearlyIncome, contactArr, langArr, leisureArr, sportArr, country, region }, { useFindAndModify: false })
+    const { fullName, profileDownloadUrl, email, about, assets, bodyType, dob, eyes, hair, height, kids, place, smoker, yearlyIncome, contactArr, langArr, leisureArr, sportArr, country, region } = req.body;
+    Users_Model.findOneAndUpdate({'email': email}, { fullName, profileDownloadUrl, about, assets, bodyType, dob, eyes, hair, height, kids, place, smoker, yearlyIncome, contactArr, langArr, leisureArr, sportArr, country, region }, { useFindAndModify: false })
         .then(() => {
             res.status(200).json('Updated')
         })
