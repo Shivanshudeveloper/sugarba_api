@@ -106,6 +106,31 @@ router.post('/userprofilecomplete', (req, res) => {
 
 
 // Database CRUD Operations
+// @POST Request to update a user profile url update
+// POST 
+router.post('/userprofilecompleteprofile', (req, res) => {
+    const { profileDownloadUrl, email } = req.body;
+    Users_Model.findOneAndUpdate({'email': email}, { profileDownloadUrl, email }, { useFindAndModify: false })
+        .then(() => {
+            res.status(200).json('Updated')
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to update a user profile 
+// POST 
+router.post('/updateuserprofile', (req, res) => {
+    const { fullName, email, username, kids, bodyType, eyes, hair } = req.body;
+    Users_Model.findOneAndUpdate({'email': email}, { fullName, username, kids, bodyType, eyes, hair }, { useFindAndModify: false })
+        .then(() => {
+            res.status(200).json('Updated')
+        })
+        .catch(err => console.log(err))
+});
+
+
+// Database CRUD Operations
 // @POST Request to GET the
 // GET 
 router.get('/getallpeople/:email', (req, res) => {
