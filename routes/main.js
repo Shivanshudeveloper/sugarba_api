@@ -512,10 +512,282 @@ router.post('/paymentsuccessfull', (req, res) => {
                 .catch(err => console.log(err))
         })
         .catch(err => res.status(400).json(`Error: ${err}`))
+});
 
-    
 
-    
+// Database CRUD Operations
+// @POST Request to Search
+// GET 
+router.post('/search', (req, res) => {
+    const { email, country, fullName, hair, bodyType } = req.body;
+    res.setHeader('Content-Type', 'application/json');
+    var tempBlockUserArr = [];
+    Block_Model.find({ email })
+        .then(data => {
+            data.map(d => {
+                tempBlockUserArr.push(d.blockedUserEmail);
+            })
+            Users_Model.findOne({ email }).sort({date: -1})
+                .then(data => {
+                    if ( bodyType !== '' ) {
+                        if (hair !== '') {
+                            if (fullName !== '') {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            } else {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, 'hair': hair, email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, 'hair': hair, email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, 'hair': hair, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, 'hair': hair, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            }
+                        } else {
+                            if (fullName !== '') {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            } else {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy",'bodyType': bodyType, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby",'bodyType': bodyType, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        console.log(bodyType);
+                        if (hair !== '') {
+                            if (fullName !== '') {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", 'hair': hair, fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            } else {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", 'hair': hair, email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", 'hair': hair, email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", 'hair': hair, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", 'hair': hair, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            }
+                        } else {
+                            if (fullName !== '') {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", fullName: {$regex: ".*" + fullName + ".*"}, email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", fullName: {$regex: ".*" + fullName + ".*"}, $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            } else {
+                                if ( country === "Word Wide" ) {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                } else {
+                                    if (data.type == "Sugar Baby") {
+                                        Users_Model.find({'type': "Sugar Daddy", $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } } ).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    } else {
+                                        Users_Model.find({'type': "Sugar Baby", $or: [ {country: 'India'}, {country: 'London'}, {country: 'Bahrain'}, {country: 'Bangladesh'}, {country: 'France'}, {country: 'Singapore'}, {country: 'Spain'}, {country: 'England'}, {country: 'London'}, {country: 'Swaziland'}, {country: 'Fineland'}, {country: 'China'}, {country: 'Japan'} ], email: { $nin: tempBlockUserArr } }).sort({date: -1})
+                                        .then(data => {
+                                            res.status(200).json(data)
+                                        })
+                                        .catch(err => console.log(err))
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                })
+                .catch(err => res.status(400).json(`Error: ${err}`))
+        })
+        .catch(err => console.log(err))
 });
 
 module.exports = router;
