@@ -57,6 +57,10 @@ const usersDataSchema = new mongoose.Schema({
         type: String,
         required: false
     },
+    vip: {
+        type: Boolean,
+        required: false
+    },
     username: {
         type: String,
         required: false
