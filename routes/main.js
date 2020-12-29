@@ -681,7 +681,7 @@ router.post('/acceptuser', (req, res) => {
                                             Users_Model.findOneAndUpdate({ email }, { credits }, { useFindAndModify: false })
                                                 .then(() => {
                                                     const newChats = new Chats_Model({
-                                                        email,
+                                                        email: chatforuseremail,
                                                         chatwithuserId: chatwithuserId,
                                                         chat: true,
                                                     });
@@ -691,9 +691,9 @@ router.post('/acceptuser', (req, res) => {
                                                                 .then((data) => {
                                                                     var uid = data._id;
                                                                     const newChats2 = new Chats_Model({
-                                                                        email: chatforuseremail,
+                                                                        email,
                                                                         chatwithuserId: uid,
-                                                                        chat: true,
+                                                                        chat: true
                                                                     });
                                                                     newChats2.save()
                                                                         .then((data) => {
