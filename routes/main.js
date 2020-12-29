@@ -12,6 +12,7 @@ const Kiss_Model = require('../models/Kiss');
 const Report_Model = require('../models/Report');
 const Payment_Model = require('../models/Payment');
 const Chats_Model = require('../models/Chat');
+const UnlockRequest_Model = require('../models/UnlockRequest');
 
 // TEST
 // @GET TEST
@@ -472,14 +473,19 @@ router.post('/paymentsuccessfull', (req, res) => {
     const { email, username, amount, package } = req.body;
     var pack = '';
     var credits = 0;
+    var vip = false;
     if ( package === "vb" ) {
         pack = '12 Months VIP 35 USD';
+        vip = true;
     } else if ( package === "vc" ) {
         pack = '6 Months VIP 45 USD';
+        vip = true;
     } else if ( package === "vd" ) {
         pack = '3 Months VIP 55 USD';
+        vip = true;
     } else if ( package === "ve" ) {
         pack = '1 Months VIP 66 USD';
+        vip = true;
     } else if ( package === "cb" ) {
         pack = '1000 Credits 160 USD';
         credits = 1000;
@@ -507,7 +513,15 @@ router.post('/paymentsuccessfull', (req, res) => {
                     });
                     newPayment.save()
                         .then((data) => {
-                            res.status(200).json("Done");
+                            if (vip === true) {
+                                Users_Model.findOneAndUpdate({ email }, { vip }, { useFindAndModify: false })
+                                    .then(() => {
+                                        res.status(200).json("Done");
+                                    })
+                                    .catch(err => console.log(err))
+                            } else {
+                                res.status(200).json("Done");
+                            }
                         })
                         .catch(err => console.log(err))
                 })
@@ -590,6 +604,136 @@ router.post('/unlockuser', (req, res) => {
         .catch(err => res.status(400).json(`Error: ${err}`))
 });
 
+
+// Database CRUD Operations
+// @POST Request to Send Unlock Request
+// POST 
+router.post('/unlockrequestuser', (req, res) => {
+    const { email, unlockforuserid, unlockforuseremail, senderprofileurl, senderfullname } = req.body;
+    res.setHeader('Content-Type', 'application/json');
+    const newUnlockRequest = new UnlockRequest_Model({
+        email,
+        unlockforuserid,
+        unlockforuseremail,
+        status: 0,
+        senderprofileurl,
+        senderfullname
+    });
+    newUnlockRequest.save()
+        .then((data) => {
+            res.status(200).json("Done");
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to GET Unlock from Me
+// GET 
+router.get('/unlockrequestforme/:email', (req, res) => {
+    const { email } = req.params;
+    res.setHeader('Content-Type', 'application/json');
+    UnlockRequest_Model.find({ unlockforuseremail: email } ).sort({date: -1})
+        .then(data => {
+            res.status(200).json(data)
+        })
+        .catch(err => console.log(err))
+});
+
+// Database CRUD Operations
+// @POST Request to POST Block User
+// POST 
+router.post('/rejectuser', (req, res) => {
+    const { id } = req.body;
+    res.setHeader('Content-Type', 'application/json');
+    UnlockRequest_Model.findOneAndUpdate({'_id': id}, { status: 2 }, { useFindAndModify: false })
+        .then(() => {
+            res.status(200).json('Un Locked')
+        })
+        .catch(err => console.log(err))
+});
+
+
+// Database CRUD Operations
+// @POST Request to POST Accept the User
+// POST 
+router.post('/acceptuser', (req, res) => {
+    const { documentId, email, chatwithuserId, chatforuseremail } = req.body;
+    res.setHeader('Content-Type', 'application/json');
+    var costcredits = 20
+    var chatwithuseremail = '';
+    var chatwithuserid2 = '';
+    Users_Model.findOne({ '_id': chatwithuserId })
+        .then(data => {
+            chatwithuseremail = data.email;
+            if (data.vip) {
+                costcredits = 5
+            }
+            UnlockRequest_Model.findOneAndUpdate({'_id': documentId}, { status: 1 }, { useFindAndModify: false })
+                .then(() => {
+                    Users_Model.findOne({ 'email': email })
+                        .then(data => {
+                            chatwithuserid2 = data._id;
+                            if ( data.credits >= costcredits ) {
+                                credits = data.credits - costcredits;
+                                Chats_Model.countDocuments({'email': email, 'chatwithuserId': chatwithuserId})
+                                    .then((count) => {
+                                        if (count === 0) {
+                                            Users_Model.findOneAndUpdate({ email }, { credits }, { useFindAndModify: false })
+                                                .then(() => {
+                                                    const newChats = new Chats_Model({
+                                                        email,
+                                                        chatwithuserId: chatwithuserId,
+                                                        chat: true,
+                                                    });
+                                                    newChats.save()
+                                                        .then((data) => {
+                                                            Users_Model.findOne({ 'email': chatforuseremail })
+                                                                .then((data) => {
+                                                                    var uid = data._id;
+                                                                    const newChats2 = new Chats_Model({
+                                                                        email: chatforuseremail,
+                                                                        chatwithuserId: uid,
+                                                                        chat: true,
+                                                                    });
+                                                                    newChats2.save()
+                                                                        .then((data) => {
+                                                                            res.status(200).json("Done");
+                                                                        })
+                                                                        .catch(err => console.log(err))
+
+                                                                }).catch(err => console.log(err))
+                                                        })
+                                                        .catch(err => console.log(err))
+                                                })
+                                                .catch(err => console.log(err))
+                                        } else {
+                                            console.log("Not");
+                                            Users_Model.findOneAndUpdate({ email }, { credits }, { useFindAndModify: false })
+                                                .then(() => {
+                                                    Chats_Model.findOneAndUpdate({ 'email': email, 'chatwithuserId': chatwithuserId }, { 'chat': true }, { useFindAndModify: false })
+                                                        .then(() => {
+                                                            res.status(200).json("Done");
+                                                        })
+                                                        .catch(err => console.log(err))
+                                                })
+                                                .catch(err => console.log(err))
+                                        }
+                                    })
+                            } else {
+                                console.log("No Credits");
+                                res.status(201).json("No Credits");
+                            }
+                        })
+                        .catch(err => res.status(400).json(`Error: ${err}`))
+
+                })
+                .catch(err => console.log(err))
+
+        }).catch(err => console.log(err))
+
+
+    
+});
 
 // Database CRUD Operations
 // @POST Request to Search
