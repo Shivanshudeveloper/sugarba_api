@@ -134,7 +134,7 @@ router.post('/updateuserprofile', (req, res) => {
 
 
 // Database CRUD Operations
-// @POST Request to GET the
+// @POST Request to GET the email people
 // GET 
 router.get('/getallpeople/:email', (req, res) => {
     const { email } = req.params;
